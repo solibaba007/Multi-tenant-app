@@ -2,6 +2,7 @@ import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { login, signup } from '@/app/action/auth'
+import { SubmitButton } from '@/components/SubmitButton'
 
 interface LoginPageProps {
   searchParams: Promise<{
@@ -31,9 +32,8 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
   return (
     <div className="flex min-h-screen w-full bg-slate-50">
-      
       <div className="flex w-full lg:w-1/2 items-center justify-center p-6 sm:p-12 mx-auto">
-        <div className="w-full max-w-md space-y-6 bg-white p-8 sm:p-10 rounded-2xl border border-gray-100 shadow-xl ">
+        <div className="w-full max-w-md space-y-6 bg-white p-8 sm:p-10 rounded-2xl border border-gray-100 shadow-xl">
           
           {/* Lock Icon header for Invitation Mode */}
           {isInviteMode && (
@@ -150,28 +150,22 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             {/* Action Buttons */}
             {isInviteMode ? (
               <div className="grid grid-cols-2 gap-3 pt-2">
-                <button
-                  type="submit"
-                  className="w-full cursor-pointer rounded-xl bg-blue-600 py-2.5 text-xs font-semibold text-white transition hover:bg-blue-700"
-                >
+                <SubmitButton className="w-full">
                   Sign In
-                </button>
+                </SubmitButton>
                 <Link
                   href={`/login?mode=signup&inviteToken=${inviteToken}&email=${encodeURIComponent(
                     initialEmail || ''
                   )}&next=${encodeURIComponent(next || '')}`}
-                  className="w-full text-center cursor-pointer rounded-xl bg-gray-100 py-2.5 text-xs font-semibold text-gray-700 transition hover:bg-gray-200"
+                  className="w-full text-center cursor-pointer rounded-xl bg-gray-100 py-2.5 text-xs font-semibold text-gray-700 transition hover:bg-gray-200 flex items-center justify-center"
                 >
                   Create Account
                 </Link>
               </div>
             ) : (
-              <button
-                type="submit"
-                className="w-full cursor-pointer rounded-xl bg-blue-600 py-2.5 text-xs font-semibold text-white transition hover:bg-blue-700"
-              >
+              <SubmitButton className="w-full">
                 {isSignUp ? 'Create Account' : 'Sign In'}
-              </button>
+              </SubmitButton>
             )}
           </form>
         </div>
