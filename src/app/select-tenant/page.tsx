@@ -1,7 +1,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { signOut } from '@/app/auth/actions'
+import { signout } from '@/app/action/auth'
 import { SignOutButton } from '@/components/SignOutButton'
 import CreateWorkSpaceForm from './CreateWorkSpaceForm'
 
@@ -39,7 +39,7 @@ export default async function SelectTenantPage({ searchParams }: SelectTenantPag
             </h1>
             <p className="mt-1 text-xs text-gray-500">{user.email}</p>
           </div>
-          <form action={signOut}>
+          <form action={signout}>
             <SignOutButton className="cursor-pointer rounded-lg bg-red-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-red-700">
               Sign Out
             </SignOutButton>
