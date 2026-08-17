@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/utils/supabase/client'
 import { createInvitation } from './actions'
 
 interface InviteMemberFormProps {
@@ -8,7 +10,13 @@ interface InviteMemberFormProps {
   initialInviteUrl?: string
 }
 
-export default function InviteMemberForm({ tenantId, initialInviteUrl }: InviteMemberFormProps) {
+export default function InviteMemberForm({
+  tenantId,
+  initialInviteUrl,
+}: InviteMemberFormProps) {
+  const router = useRouter()
+  const supabase = createClient()
+
   const [email, setEmail] = useState('')
   const [role, setRole] = useState('member')
   const [inviteUrl, setInviteUrl] = useState<string | null>(initialInviteUrl || null)
@@ -16,6 +24,7 @@ export default function InviteMemberForm({ tenantId, initialInviteUrl }: InviteM
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [signingOut, setSigningOut] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -39,6 +48,18 @@ export default function InviteMemberForm({ tenantId, initialInviteUrl }: InviteM
     }
   }
 
+  async function handleSignOut() {
+    setSigningOut(true)
+    const { error } = await supabase.auth.signOut()
+    if (!error) {
+      router.push('/login')
+      router.refresh()
+    } else {
+      setSigningOut(false)
+      console.error('Error signing out:', error.message)
+    }
+  }
+
   function copyToClipboard(text: string) {
     navigator.clipboard.writeText(text)
     setCopied(true)
@@ -47,7 +68,18 @@ export default function InviteMemberForm({ tenantId, initialInviteUrl }: InviteM
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <h2 className="text-lg font-bold text-gray-900">Invite a Member</h2>
+      {/* Header Container with Title & Sign Out Button */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-bold text-gray-900">Invite a Member</h2>
+        <button
+          type="button"
+          onClick={handleSignOut}
+          disabled={signingOut}
+          className="cursor-pointer rounded-lg bg-red-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-red-700 focus:outline-none disabled:opacity-50"
+        >
+          {signingOut ? 'Signing Out...' : 'Sign Out'}
+        </button>
+      </div>
 
       {/* Persistent Error Notification */}
       {error && (
@@ -89,7 +121,7 @@ export default function InviteMemberForm({ tenantId, initialInviteUrl }: InviteM
             <button
               type="button"
               onClick={() => copyToClipboard(inviteUrl)}
-              className="cursor-pointer rounded bg-emerald-700 px-3 py-1 font-semibold text-white text-xs hover:bg-emerald-800 transition"
+              className="cursor-pointer rounded bg-emerald-700 px-3 py-1 text-xs font-semibold text-white transition hover:bg-emerald-800"
             >
               {copied ? 'Copied!' : 'Copy'}
             </button>
